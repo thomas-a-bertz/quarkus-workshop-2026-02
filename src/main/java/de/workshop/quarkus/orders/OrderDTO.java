@@ -1,12 +1,25 @@
 package de.workshop.quarkus.orders;
 
+import jakarta.validation.constraints.*;
+
+import java.util.Objects;
 import java.util.UUID;
 
 public class OrderDTO {
     private UUID orderId;
+
+    @NotBlank
+    @Size(min = 2, max = 10)
     private String customerLastname;
+
     private String customerFirstname;
+
+    @Alphabetic
     private String itemDescription;
+
+    @NotNull
+    @Even
+    @Positive
     private int amount;
 
     public OrderDTO() {
@@ -58,5 +71,28 @@ public class OrderDTO {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderDTO orderDTO = (OrderDTO) o;
+        return getAmount() == orderDTO.getAmount() && Objects.equals(getOrderId(), orderDTO.getOrderId()) && Objects.equals(getCustomerLastname(), orderDTO.getCustomerLastname()) && Objects.equals(getCustomerFirstname(), orderDTO.getCustomerFirstname()) && Objects.equals(getItemDescription(), orderDTO.getItemDescription());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getOrderId(), getCustomerLastname(), getCustomerFirstname(), getItemDescription(), getAmount());
+    }
+
+    @Override
+    public String toString() {
+        return "OrderDTO{" +
+                "orderId=" + orderId +
+                ", customerLastname='" + customerLastname + '\'' +
+                ", customerFirstname='" + customerFirstname + '\'' +
+                ", itemDescription='" + itemDescription + '\'' +
+                ", amount=" + amount +
+                '}';
     }
 }

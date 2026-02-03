@@ -3,7 +3,7 @@
 ### via Zip-Datei von Website
 - https://quarkus.io/ Start Coding
 
-### via mit Maven
+### via Maven
 - Pfad zu einem *JDK* setzen (je nach dem, wo dieser installiert ist)
   - `set java_home=C:\Program Files\Java\jdk21` (Windows Cmdline)
   - `export JAVA_HOME=/c/Program\ Files/Java/jdk21` (Linux/ Bash)
