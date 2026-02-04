@@ -1,4 +1,4 @@
-package de.workshop.quarkus.orders;
+package de.workshop.quarkus.orders.shared.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

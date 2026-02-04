@@ -1,5 +1,7 @@
-package de.workshop.quarkus.orders;
+package de.workshop.quarkus.orders.boundary;
 
+import de.workshop.quarkus.orders.domain.OrderEntity;
+import de.workshop.quarkus.orders.domain.OrderService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.RequestScoped;
@@ -17,6 +19,9 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
 import java.net.URI;
 import java.util.UUID;
+
+import static de.workshop.quarkus.orders.boundary.OrderMapper.toDTO;
+import static de.workshop.quarkus.orders.boundary.OrderMapper.toEntity;
 
 @Path("/orders")
 @RequestScoped
@@ -51,7 +56,9 @@ public class OrderResource implements OrderAPI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOrders() {
-        return Response.ok(orderService.getOrders()).build();
+        return Response.ok(orderService.getOrders().stream()
+                .map(OrderMapper::toDTO)
+                .toList()).build();
     }
 
     @APIResponse(
@@ -71,12 +78,13 @@ public class OrderResource implements OrderAPI {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Override
-    public Response createOrder(@Valid OrderDTO order) {
-        orderService.saveOrder(order);
+    public Response createOrder(@Valid OrderDTO orderDTO) {
+        OrderEntity orderEntity = toEntity(orderDTO);
+        orderService.saveOrder(orderEntity);
 
         URI location = UriBuilder
                 .fromResource(OrderResource.class)
-                .path(order.getOrderId().toString())
+                .path(orderEntity.getOrderId().toString())
                 .build();
         return Response.created(location).build();
     }
@@ -85,13 +93,13 @@ public class OrderResource implements OrderAPI {
     @Path("/{orderId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public Response getOrders(@Parameter(
+    public Response getOrder(@Parameter(
             description = "die orderId (im UUID-Format)",
             example = "daaa9f8a-1ace-46b9-aa68-598eaf6acf3f"
     )
             @PathParam("orderId") UUID orderId) {
         return orderService.getOrder(orderId)
-                .map(dto -> Response.ok(dto).build())
+                .map(entity -> Response.ok(toDTO(entity)).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 }

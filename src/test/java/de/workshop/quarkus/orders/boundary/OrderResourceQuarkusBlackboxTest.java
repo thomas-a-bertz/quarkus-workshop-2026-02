@@ -1,4 +1,4 @@
-package de.workshop.quarkus.orders;
+package de.workshop.quarkus.orders.boundary;
 
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import static de.workshop.quarkus.orders.util.OrderDTOTestFactory.TEST_DTO1;
 import static de.workshop.quarkus.orders.util.OrderDTOTestFactory.TEST_DTO2;
+import static de.workshop.quarkus.orders.util.OrderEntityTestFactory.TEST_ENTITY1;
+import static de.workshop.quarkus.orders.util.OrderEntityTestFactory.TEST_ENTITY2;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -21,12 +23,12 @@ class OrderResourceQuarkusBlackboxTest {
         // arrange
         given()
                 .header("Content-Type", "application/json")
-                .body(TEST_DTO1.create())
+                .body(TEST_ENTITY1.create())
                 .when().post()
                         .then().statusCode(201);
         given()
                 .header("Content-Type", "application/json")
-                .body(TEST_DTO2.create())
+                .body(TEST_ENTITY2.create())
                 .when().post()
                         .then().statusCode(201);
         OrderDTO dto1 = TEST_DTO1.create();

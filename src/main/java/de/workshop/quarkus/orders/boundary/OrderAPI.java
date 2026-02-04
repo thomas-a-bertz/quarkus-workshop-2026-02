@@ -1,4 +1,4 @@
-package de.workshop.quarkus.orders;
+package de.workshop.quarkus.orders.boundary;
 
 import jakarta.validation.Valid;
 import jakarta.ws.rs.GET;
@@ -38,5 +38,5 @@ public interface OrderAPI {
 
     @GET
     @Path("/{orderId}")
-    Response getOrders(UUID orderId);
+    Response getOrder(UUID orderId);
 }

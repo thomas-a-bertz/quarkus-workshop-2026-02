@@ -1,4 +1,4 @@
-package de.workshop.quarkus.orders;
+package de.workshop.quarkus.orders.boundary;
 
 public class MyErrorResponse {
     private String fieldname;

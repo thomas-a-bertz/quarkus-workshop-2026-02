@@ -1,5 +1,7 @@
-package de.workshop.quarkus.orders;
+package de.workshop.quarkus.orders.boundary;
 
+import de.workshop.quarkus.orders.shared.validation.Alphabetic;
+import de.workshop.quarkus.orders.shared.validation.Even;
 import jakarta.validation.constraints.*;
 
 import java.util.Objects;
@@ -23,6 +25,10 @@ public class OrderDTO {
     private int amount;
 
     public OrderDTO() {
+    }
+
+    public OrderDTO(UUID orderId) {
+        this.orderId = orderId;
     }
 
     public OrderDTO(UUID orderId, String customerLastname, String customerFirstname, String itemDescription, int amount) {
