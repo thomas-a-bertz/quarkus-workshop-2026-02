@@ -35,7 +35,7 @@
 - getestet wird via REST (Netzwerk) von außen, deshalb laufen diese Tests deutlich langsamer und sind aufwändiger, haben aber auch eine größere Aussagekraft
 
 ### Blackbox-Tests
-Testet nur das Ein-/Ausgabeverhalten der UUT (Unit under Test). Es werden keine internen Aufrufe geprüft/verifiziert (das ist die Black Box). Wohl müssen aber (interne) Dependencies gemockt werden (also auch deren Verhalten). Diese liegen zwar in der Black Box, aber sie wurden injiziert und sind deshalb vorbestimmt und kontrollierbar. Nur eine Änderung der Fachlichkeit oder des Interfaces kann den Test brechen, kein Implementierungsdetail.
+Testet nur das Ein-/Ausgabeverhalten der UUT (Unit under Test). Es werden keine internen Dependencies gemockt oder Aufrufe auf ihnen geprüft/verifiziert (das ist die Black Box). Wir greifen ausschließlich über die öffentliche Schnittstelle unseres Testobjekts zu. Nur eine Änderung der Fachlichkeit oder des Interfaces kann den Test brechen, kein Implementierungsdetail.
 
 ### Whitebox-Tests
 Testet gezielt internes Verhalten/interne Logik (=Implementierungsdetails) der UUT (White Box). Auch hier können wir gezielt eingreifen, um interne Dependencies zu mocken. Das ist aber optional und wird zum Vorbelegen von internen Zuständen genutzt. Nicht nur Änderungen der Fachlichkeit und des Interfaces können den Test brechen sondern zusätzlich eine Änderung der Implementierung.
