@@ -2,8 +2,6 @@ package de.workshop.quarkus.orders.boundary;
 
 import de.workshop.quarkus.orders.domain.OrderEntity;
 import de.workshop.quarkus.orders.domain.OrderService;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -32,16 +30,6 @@ public class OrderResource implements OrderAPI {
     @Inject
     public OrderResource(OrderService orderService) {
         this.orderService = orderService;
-    }
-
-    @PostConstruct
-    public void setup() {
-        System.out.println("OrderResource erstellt");
-    }
-
-    @PreDestroy
-    public void raeumeAuf() {
-        System.out.println("OrderResource wird beendet");
     }
 
     @APIResponse(
@@ -81,6 +69,12 @@ public class OrderResource implements OrderAPI {
     public Response createOrder(@Valid OrderDTO orderDTO) {
         OrderEntity orderEntity = toEntity(orderDTO);
         orderService.saveOrder(orderEntity);
+
+        // nächste Erweiterung: anderen Microservices Bescheid geben,
+        // dass eine Bestellung eingegangen ist
+        // Möglichkeiten
+        //   1. via REST: POST-Request (synchron)
+        //   2. via "send Message"/"publish Event" OrderCreated (asynchron, fire and forget)
 
         URI location = UriBuilder
                 .fromResource(OrderResource.class)

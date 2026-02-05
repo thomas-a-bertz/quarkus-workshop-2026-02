@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
@@ -14,9 +15,11 @@ public class OrderEntity {
     @Id
     @GeneratedValue
     private Long id;
+
+    @NotNull
+    // @Column(nullable = false, unique = true) // nicht nötig: NotNull macht bereits Bean-Validation, Rest Liquibase
     private UUID orderId;
     private String customerLastname;
-    private String customerFirstname;
     private String itemDescription;
     private int amount;
 
@@ -27,10 +30,9 @@ public class OrderEntity {
         this.orderId = orderId;
     }
 
-    public OrderEntity(UUID orderId, String customerLastname, String customerFirstname, String itemDescription, int amount) {
+    public OrderEntity(UUID orderId, String customerLastname, String itemDescription, int amount) {
         this.orderId = orderId;
         this.customerLastname = customerLastname;
-        this.customerFirstname = customerFirstname;
         this.itemDescription = itemDescription;
         this.amount = amount;
     }
@@ -57,14 +59,6 @@ public class OrderEntity {
 
     public void setCustomerLastname(String customerLastname) {
         this.customerLastname = customerLastname;
-    }
-
-    public String getCustomerFirstname() {
-        return customerFirstname;
-    }
-
-    public void setCustomerFirstname(String customerFirstname) {
-        this.customerFirstname = customerFirstname;
     }
 
     public String getItemDescription() {

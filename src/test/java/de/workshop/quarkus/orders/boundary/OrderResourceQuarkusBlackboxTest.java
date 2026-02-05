@@ -44,9 +44,7 @@ class OrderResourceQuarkusBlackboxTest {
                 .body("customerLastname", containsInAnyOrder(
                         dto1.getCustomerLastname(),
                         dto2.getCustomerLastname()))
-                .body("customerFirstname", containsInAnyOrder(
-                        dto1.getCustomerFirstname(),
-                        dto2.getCustomerFirstname()))
+                // customerFirstname wird von OrderEntity nicht mehr verwaltet
                 .body("itemDescription", containsInAnyOrder(
                         dto1.getItemDescription(),
                         dto2.getItemDescription()))

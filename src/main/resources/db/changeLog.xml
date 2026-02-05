@@ -1,0 +1,47 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="Thomas Bertz">
+        <createSequence sequenceName="ORDERS_SEQ"
+                        startValue="1" incrementBy="50"/>
+
+        <createTable tableName="ORDERS">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="orderId" type="java.util.UUID">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="customerLastname" type="VARCHAR2(100)"/>
+            <column name="customerFirstname" type="VARCHAR(100)"/>
+            <column name="itemDescription" type="VARCHAR(100)"/>
+            <column name="amount" type="int"/>
+        </createTable>
+
+        <createIndex tableName="ORDERS" indexName="INDEX_ORDERS_orderId">
+            <column name="orderId"></column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2" author="Florian">
+        <addColumn tableName="ORDERS">
+            <column name="customerBirthday" type="date"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="3" author="Thomas Bertz">
+        <!-- ACHTUNG: hier könnten echte Daten gelöscht werden! -->
+        <dropColumn tableName="ORDERS" columnName="customerBirthday"/>
+    </changeSet>
+
+    <changeSet id="4" author="Thomas Bertz">
+        <createIndex tableName="ORDERS" indexName="INDEX_ORDERS_amount">
+            <column name="amount"></column>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

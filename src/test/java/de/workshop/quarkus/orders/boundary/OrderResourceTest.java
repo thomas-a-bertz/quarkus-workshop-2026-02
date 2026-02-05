@@ -56,6 +56,7 @@ class OrderResourceTest {
                 .usingRecursiveComparison()
                 .ignoringCollectionOrder()
                 .ignoringFields("orderId")
+                .ignoringActualNullFields() // customerFirstname wird von Entity nicht mehr verwaltet
                 .isEqualTo(List.of(TEST_DTO2.create(), TEST_DTO1.create()));
     }
 
