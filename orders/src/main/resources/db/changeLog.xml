@@ -25,7 +25,7 @@
         </createTable>
 
         <createIndex tableName="ORDERS" indexName="INDEX_ORDERS_orderId">
-            <column name="orderId"></column>
+            <column name="orderId"/>
         </createIndex>
     </changeSet>
 
@@ -41,7 +41,7 @@
 
     <changeSet id="4" author="Thomas Bertz">
         <createIndex tableName="ORDERS" indexName="INDEX_ORDERS_amount">
-            <column name="amount"></column>
+            <column name="amount"/>
         </createIndex>
     </changeSet>
 </databaseChangeLog>
