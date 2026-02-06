@@ -5,7 +5,7 @@
     <groupId>de.workshop.quarkus</groupId>
     <artifactId>invoices</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>quarkus</packaging>
+<!--    <packaging>quarkus</packaging> -->
 
     <properties>
         <compiler-plugin.version>3.14.1</compiler-plugin.version>
@@ -63,6 +63,16 @@
                 <artifactId>quarkus-maven-plugin</artifactId>
                 <version>${quarkus.platform.version}</version>
                 <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>generate-code</goal>
+                            <goal>generate-code-tests</goal>
+                            <goal>native-image-agent</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
