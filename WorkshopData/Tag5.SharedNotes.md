@@ -41,9 +41,26 @@ Damit auch der *Orders*-Microservice mit *Invoices* auf diese Art kommunizieren 
   - Zugriff auf selbstdefinierte Werte in der `application.properties`, siehe Quarkus Guide [Configuring Your Application](https://quarkus.io/guides/config)
 
 ## Security
-### REST-Endpunkte absichern
-
-### Testinstanz zum Erzeugen von JWTs
+### REST-Endpunkte mit Role-Based Access Control (RBAC) absichern
+- *Einrichtung*
+  - Quarkus-Extension `io.quarkus:quarkus-smallrye-jwt` hinzufügen
+- *Absicherung*
+  - Nun können Endpunkte mittels `@PermitAll` oder `@RolesAllowed` annotiert werden
+  - Es muss dann bei jedem REST-Request ein valides JSON Web Token (JWT) mitgeschickt werden.
+  - Um dies via SwaggerUI zu testen gibt es nun oben rechts einen *Authorize*-Button. In dieses Feld muss der String des JWT eingefügt werden
+  - Die Extension in Kombination mit der Annotation sorgt dafür, dass nur Anfragen mit einem validen Token durch die Implementierung der Methode bearbeitet werden.
+  - Ist das Token valide, so kann man dieses auch in der Methode auslesen, wenn man es sich vorher in die Klasse hat injizieren lassen (JsonWebToken).
+- *Tokenerzeugung*
+  - Normalerweise gibt es eine entsprechende Zeritifizierungsinstanz, die gültige Tokens ausstellt. Hier müssen wir eine solche Instanz zu Testzwecken im `test`-Folder simulieren. Wir benötigen dazu:
+    - `test/java/.../security.jwt/GenerateTestTokens`
+    - Diese Klasse erzeugt Tokens und hängt bestimmte Felder dran, die später bei der Validierung von unserer Endpunktabsicherung ausgelesen und überprüft werden (issuer, groups, exp). Schließlich signiert die Methode das Token und zwar mit einem privaten Schlüssel (unserer Organisation).
+    - privater Schlüssel `privateKey.pem` in `test/resources/` sowie
+    - für `test/resoures` eine eigene `application.properties` (zusätzlich zu der in `main/resources`)
+  - Führt man `GenerateTestTokens` aus, so wird ein zeitlich befristetes Token ausgestellt, dessen Wert man aus der Console kopieren und auf der SwaggerUI-Authorization-Seite einfügen kann, damit es bei jedem folgenden Request mitgeschickt wird.
+- *Tokenvalidierung*
+  - Um mitgeschickte Tokens validieren zu können braucht die Quarkus-Extension
+    - neue Konfigurationsparameter in `main/resources/application.properties` und
+    - den passenden öffentlichen Schlüssel `publicKey.pem`
 
 ## OpenAPI Contract-First
 

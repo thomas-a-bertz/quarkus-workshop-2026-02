@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -26,7 +28,7 @@ public interface OrderAPI {
             )
     )
     @GET
-    Response getOrders();
+    Response getOrders(@Context SecurityContext securityContext);
 
     @APIResponse(
             responseCode = "201",
@@ -47,5 +49,5 @@ public interface OrderAPI {
 
     @GET
     @Path("/{orderId}")
-    Response getOrder(UUID orderId);
+    Response getOrder(UUID orderId, SecurityContext ctx);
 }

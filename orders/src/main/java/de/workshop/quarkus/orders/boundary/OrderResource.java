@@ -4,18 +4,14 @@ import de.workshop.quarkus.orders.domain.OrderEntity;
 import de.workshop.quarkus.orders.domain.OrderService;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
-import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import jakarta.ws.rs.core.*;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,6 +27,9 @@ import static de.workshop.quarkus.orders.boundary.OrderMapper.toEntity;
 @RequestScoped
 public class OrderResource implements OrderAPI {
 
+    @Inject
+    JsonWebToken jwt;
+
     private final OrderService orderService;
 
     @Inject
@@ -38,37 +37,39 @@ public class OrderResource implements OrderAPI {
         this.orderService = orderService;
     }
 
-    @APIResponse(
-            responseCode = "200",
-            content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(type = SchemaType.ARRAY, implementation = OrderDTO.class)
-            ),
-            description = "Orders existieren"
-    )
+    @RolesAllowed({"Praktikant", "Mitarbeiter"})
     @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getOrders() {
+    public Response getOrders(@Context SecurityContext ctx) {
+        logSecurityContext(ctx);
+
         return Response.ok(orderService.getOrders().stream()
                 .map(OrderMapper::toDTO)
                 .toList()).build();
     }
 
-    @APIResponse(
-            responseCode = "201",
-            content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(implementation = URI.class)
-            )
-    )
-    @APIResponse(
-            responseCode = "400",
-            content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(implementation = MyErrorResponse.class)
-            )
-    )
+    private void logSecurityContext(SecurityContext ctx) {
+        String name;
+        if (ctx.getUserPrincipal() == null) {
+            name = "anonymous";
+        } else if (!ctx.getUserPrincipal().getName().equals(jwt.getName())) {
+            throw new InternalServerErrorException("Principal and JsonWebToken names do not match");
+        } else {
+            name = ctx.getUserPrincipal().getName();
+        }
+        System.out.println("GET /orders called with: " + String.format("name = %s,"
+                        + " isHttps: %s,"
+                        + " authScheme: %s,"
+                        + " hasJWT: %s",
+                name, ctx.isSecure(), ctx.getAuthenticationScheme(), hasJwt()));
+    }
+
+    private boolean hasJwt() {
+        return jwt.getClaimNames() != null;
+    }
+
+    @RolesAllowed({"Mitarbeiter"})
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Blocking
@@ -125,7 +126,7 @@ public class OrderResource implements OrderAPI {
             description = "die orderId (im UUID-Format)",
             example = "daaa9f8a-1ace-46b9-aa68-598eaf6acf3f"
     )
-            @PathParam("orderId") UUID orderId) {
+            @PathParam("orderId") UUID orderId, @Context SecurityContext securityContext) {
         return orderService.getOrder(orderId)
                 .map(entity -> Response.ok(toDTO(entity)).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
