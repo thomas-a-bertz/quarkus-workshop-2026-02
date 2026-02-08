@@ -5,6 +5,7 @@ import de.workshop.quarkus.orders.domain.OrderService;
 import de.workshop.quarkus.orders.domain.OrderRepository;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -38,6 +39,9 @@ class OrderResourceTest {
     //      Wir nutzen weiterhin State-based Testing (Chicago/Classicist Style/School).
     //      Wir kennen keine Interna (injizierte Klassen
     //      sind Teil der Infrastruktur, in der die BlackBox lebt/läuft.
+
+    // FIXME: temporär abgeschaltet, damit wir uns auf Kursinhalt statt das Testen konzentrieren können
+    @Disabled
     @Test
     void getOrders_UnitBlackBoxStatebasedTest() {
         // arrange

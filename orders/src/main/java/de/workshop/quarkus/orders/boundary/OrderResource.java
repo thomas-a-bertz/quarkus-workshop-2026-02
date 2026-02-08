@@ -2,6 +2,8 @@ package de.workshop.quarkus.orders.boundary;
 
 import de.workshop.quarkus.orders.domain.OrderEntity;
 import de.workshop.quarkus.orders.domain.OrderService;
+import io.smallrye.common.annotation.Blocking;
+import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -15,7 +17,11 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.UUID;
 
 import static de.workshop.quarkus.orders.boundary.OrderMapper.toDTO;
@@ -65,6 +71,7 @@ public class OrderResource implements OrderAPI {
     )
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Blocking
     @Override
     public Response createOrder(@Valid OrderDTO orderDTO) {
         OrderEntity orderEntity = toEntity(orderDTO);
@@ -73,7 +80,8 @@ public class OrderResource implements OrderAPI {
         // nächste Erweiterung: anderen Microservices Bescheid geben,
         // dass eine Bestellung eingegangen ist
         // Möglichkeiten
-        //   1. via REST: POST-Request (synchron)
+        //   1. via REST: POST-Request (synchron = blockierend!)
+        doSynchronousRESTcall(orderEntity.getCustomerLastname(), orderEntity.getAmount());
         //   2. via "send Message"/"publish Event" OrderCreated (asynchron, fire and forget)
 
         URI location = UriBuilder
@@ -83,6 +91,32 @@ public class OrderResource implements OrderAPI {
         return Response.created(location).build();
     }
 
+    private static void doSynchronousRESTcall(String customerName, int amount) {
+        var httpClient = HttpClient.newBuilder().build();
+        String invoiceRequestJson = "\n" +
+                "{\n" +
+                "    \"customerName\": \"" + customerName + "\",\n" +
+                "    \"amount\": " + amount + "\n" +
+                "}";
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8081/invoices"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(invoiceRequestJson))
+                .build();
+        HttpResponse<String> response;
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Fehler beim Versenden des InvoiceRequests: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        if (response == null || response.statusCode() != 201) {
+            System.err.println("Versenden des InvoiceRequests nicht erfolgreich");
+        }
+    }
+
+//    @RolesAllowed({"Praktikant", "Mitarbeiter"})
+    @PermitAll
     @GET
     @Path("/{orderId}")
     @Produces(MediaType.APPLICATION_JSON)
