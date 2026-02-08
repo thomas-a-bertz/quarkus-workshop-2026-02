@@ -1,5 +1,6 @@
 package de.workshop.quarkus.invoices;
 
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
@@ -31,9 +32,10 @@ public class InvoiceResource {
         return Response.ok(invoiceService.getAll()).build();
     }
 
+    @Blocking
     @POST
     @Consumes(APPLICATION_JSON)
-    public Response create(InvoiceRequest invoiceRequest) {
+    public Response create(InvoiceRequest invoiceRequest) throws InterruptedException {
         invoiceService.save(invoiceRequest);
         return Response.status(CREATED).build();
     }

@@ -25,8 +25,9 @@ public class InvoiceService {
         return invoices.values();
     }
 
-    public void save(InvoiceRequest request) {
+    public void save(InvoiceRequest request) throws InterruptedException {
         UUID invoiceId = UUID.randomUUID();
+        System.out.println("Starte Berechnung für     " + invoiceId);
         var bruttoGesamtsummeEuro = valueOf(request.amount())
                 .multiply(ALL_ITEMS_PRICE_EURO)
                 .multiply(ONE.add(VAT_RATE_PERCENT
@@ -34,6 +35,7 @@ public class InvoiceService {
         var invoice = new Invoice(invoiceId, request.customerName(),
                 bruttoGesamtsummeEuro.setScale(2, RoundingMode.HALF_EVEN));
         invoices.put(invoiceId, invoice);
+        Thread.sleep(3000);
         System.out.println("Invoice " + invoice + " has been saved.");
     }
 }
