@@ -1,5 +1,6 @@
 package de.workshop.quarkus.orders.boundary;
 
+import de.workshop.quarkus.orders.boundary.api.OrdersApi;
 import de.workshop.quarkus.orders.domain.OrderEntity;
 import de.workshop.quarkus.orders.domain.OrderService;
 import io.smallrye.common.annotation.Blocking;
@@ -8,6 +9,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -25,7 +27,7 @@ import static de.workshop.quarkus.orders.boundary.OrderMapper.toEntity;
 
 @Path("/orders")
 @RequestScoped
-public class OrderResource implements OrderAPI {
+public class OrderResource extends OrdersApi {
 
     @Inject
     JsonWebToken jwt;
@@ -37,17 +39,28 @@ public class OrderResource implements OrderAPI {
         this.orderService = orderService;
     }
 
-    @RolesAllowed({"Praktikant", "Mitarbeiter"})
     @Override
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getOrders(@Context SecurityContext ctx) {
-        logSecurityContext(ctx);
-
+    @Path("/{orderId}")
+    @Override
+    public Response ordersOrderIdGet(@PathParam("orderId") @Pattern(regexp="[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}") UUID orderId) {
         return Response.ok(orderService.getOrders().stream()
                 .map(OrderMapper::toDTO)
                 .toList()).build();
     }
+
+
+//    @RolesAllowed({"Praktikant", "Mitarbeiter"})
+//    @Override
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getOrders(@Context SecurityContext ctx) {
+//        logSecurityContext(ctx);
+//
+//        return Response.ok(orderService.getOrders().stream()
+//                .map(OrderMapper::toDTO)
+//                .toList()).build();
+//    }
 
     private void logSecurityContext(SecurityContext ctx) {
         String name;
@@ -126,7 +139,7 @@ public class OrderResource implements OrderAPI {
             description = "die orderId (im UUID-Format)",
             example = "daaa9f8a-1ace-46b9-aa68-598eaf6acf3f"
     )
-            @PathParam("orderId") UUID orderId, @Context SecurityContext securityContext) {
+            @PathParam("orderId") UUID orderId) {
         return orderService.getOrder(orderId)
                 .map(entity -> Response.ok(toDTO(entity)).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());

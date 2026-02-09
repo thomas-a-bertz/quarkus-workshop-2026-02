@@ -63,6 +63,9 @@ Damit auch der *Orders*-Microservice mit *Invoices* auf diese Art kommunizieren 
     - den passenden öffentlichen Schlüssel `publicKey.pem`
 
 ## OpenAPI Contract-First
-
+- Zu Beginn des Workshops haben wir Code-First mit OpenAPI gearbeitet, d.h. wir haben die OpenAPI-Spezifikation mittels Annotationen im Code beschrieben (und daraus wurde automatisch unsere SwaggerUI erzeugt). Für kleine Projekte und Schulungssituationen wie diese ist dies ausreichend.
+- Für größere Projekte mit vielen und komplexen Endpunkten, mehreren Teams oder gar öffentlichen APIs ist der Contract-First-Ansatz besser geeignet. Vorgehen:
+  - Man schreibt die API-Spezifikation im JSON- oder YAML-Format
+  - Daraus generiert man mittels 
 
 ## Health-Checks

@@ -1,0 +1,168 @@
+{
+  "openapi" : "3.1.0",
+  "components" : {
+    "schemas" : {
+      "MyErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "fieldname" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
+      },
+      "OrderDTO" : {
+        "type" : "object",
+        "required" : [ "customerLastname", "amount" ],
+        "properties" : {
+          "orderId" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "customerLastname" : {
+            "type" : "string",
+            "minLength" : 2,
+            "maxLength" : 10,
+            "pattern" : "\\S"
+          },
+          "customerMiddleName" : {
+            "type" : "string"
+          },
+          "customerFirstname" : {
+            "type" : "string"
+          },
+          "itemDescription" : {
+            "type" : "string"
+          },
+          "amount" : {
+            "type" : "integer",
+            "exclusiveMinimum" : 0,
+            "format" : "int32"
+          }
+        }
+      },
+      "UUID" : {
+        "type" : "string",
+        "format" : "uuid",
+        "pattern" : "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      }
+    },
+    "securitySchemes" : {
+      "SecurityScheme" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT",
+        "description" : "Authentication"
+      }
+    }
+  },
+  "paths" : {
+    "/orders" : {
+      "get" : {
+        "responses" : {
+          "200" : {
+            "description" : "Orders existieren",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/OrderDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Get Orders",
+        "tags" : [ "Order Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "Praktikant", "Mitarbeiter" ]
+        } ]
+      },
+      "post" : {
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OrderDTO"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "format" : "uri"
+                }
+              }
+            },
+            "description": "Bestellung angelegt"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MyErrorResponse"
+                }
+              }
+            },
+            "description": "Falsches Format des Requests"
+          },
+          "401" : {
+            "description" : "Not Authorized"
+          },
+          "403" : {
+            "description" : "Not Allowed"
+          }
+        },
+        "summary" : "Create Order",
+        "tags" : [ "Order Resource" ],
+        "security" : [ {
+          "SecurityScheme" : [ "Mitarbeiter" ]
+        } ]
+      }
+    },
+    "/orders/{orderId}" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "orderId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/UUID"
+          },
+          "description" : "die orderId (im UUID-Format)",
+          "example" : "daaa9f8a-1ace-46b9-aa68-598eaf6acf3f"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          }
+        },
+        "summary" : "Get Order",
+        "tags" : [ "Order Resource" ]
+      }
+    }
+  },
+  "info" : {
+    "title" : "orders API",
+    "version" : "1.0.0-SNAPSHOT"
+  }
+}
