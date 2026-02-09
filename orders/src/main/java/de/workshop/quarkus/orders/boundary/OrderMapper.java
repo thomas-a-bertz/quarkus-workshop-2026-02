@@ -1,5 +1,6 @@
 package de.workshop.quarkus.orders.boundary;
 
+import de.workshop.quarkus.orders.boundary.model.OrderDTO;
 import de.workshop.quarkus.orders.domain.OrderEntity;
 
 public class OrderMapper {

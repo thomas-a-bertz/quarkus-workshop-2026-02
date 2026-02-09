@@ -1,7 +1,5 @@
 package de.workshop.quarkus.orders.util;
 
-import de.workshop.quarkus.orders.boundary.OrderDTO;
-
 import java.util.UUID;
 
 public enum OrderDTOTestFactory {
